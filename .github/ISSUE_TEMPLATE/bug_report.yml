@@ -1,0 +1,39 @@
+name: Bug report
+description: Report something that is broken or behaving unexpectedly.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve boobs.pictures. Do not include passwords, private location data, or unlicensed photographs.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Explain what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      placeholder: List the smallest set of steps that demonstrates the problem.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+      placeholder: Safari 19 on iPhone, Chrome 140 on macOS, etc.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or additional context
+      description: Drag in a screenshot if it does not contain personal or sensitive information.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true

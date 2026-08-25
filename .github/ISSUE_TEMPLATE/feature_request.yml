@@ -1,0 +1,30 @@
+name: Feature idea
+description: Suggest an improvement to the field guide or community map.
+title: "[Idea]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What need does this address?
+      description: Tell us about the person, workflow, or wildlife problem behind the idea.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: wildlife
+    attributes:
+      label: Wildlife safety or data considerations
+      description: Note any sensitive locations, attribution, privacy, licensing, or moderation concerns.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true
