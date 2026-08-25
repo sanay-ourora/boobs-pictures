@@ -9,6 +9,46 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.scroll-reveal').forEach((el) => revealObserver.observe(el));
 
+const factLine = document.querySelector('.fact-line');
+const factNumbers = [...document.querySelectorAll('.fact-number[data-value]')];
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+if (factLine && factNumbers.length && !reducedMotion.matches) {
+  const factObserver = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+
+    factNumbers.forEach((number) => {
+      number.textContent = '00';
+    });
+
+    const startedAt = performance.now();
+    const duration = 1050;
+    const stagger = 110;
+
+    const count = (now) => {
+      factNumbers.forEach((number, index) => {
+        const elapsed = now - startedAt - index * stagger;
+        if (elapsed < 0) return;
+
+        number.classList.add('is-counting');
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(Number(number.dataset.value) * eased);
+        number.textContent = String(value).padStart(2, '0');
+      });
+
+      if (now < startedAt + duration + stagger * (factNumbers.length - 1)) {
+        requestAnimationFrame(count);
+      }
+    };
+
+    requestAnimationFrame(count);
+    factObserver.unobserve(factLine);
+  }, { threshold: 0.4 });
+
+  factObserver.observe(factLine);
+}
+
 const card = document.querySelector('.map-card');
 document.querySelectorAll('.pin').forEach((pin, index) => {
   pin.addEventListener('click', () => {
