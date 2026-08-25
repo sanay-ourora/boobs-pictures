@@ -40,7 +40,7 @@ document.addEventListener('visibilitychange', () => {
   announcePagePresence();
 });
 
-if (soundControl && soundRange && soundMute) {
+if (soundControl && soundRange && soundMute && finePointer.matches) {
   let audioContext;
   let birdsong;
   let soundGain;
