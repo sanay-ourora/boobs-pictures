@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#06141f">
+  <meta name="description" content="A playful field guide and future community map for the world's booby seabirds.">
+  <title>boobs.pictures — Keep your eyes on the birds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="boobs.pictures home">boobs<span>.</span>pictures</a>
+    <nav aria-label="Primary navigation">
+      <a href="#map">Map</a><a href="#field-notes">Field notes</a>
+    </nav>
+    <a class="nav-cta" href="#join">Join the flock <span>↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-media" aria-hidden="true"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow reveal">A very serious bird website <span>•</span> Est. 2026</p>
+        <h1 class="reveal">Keep your eyes<br>on the <em>birds.</em></h1>
+        <p class="hero-intro reveal">A living atlas of boobies—the fearless, fish-diving seabirds with excellent feet and an unforgettable name.</p>
+        <a class="primary-action reveal" href="#map">Explore the flock <span class="arrow">↓</span></a>
+      </div>
+      <div class="specimen-tag reveal" aria-label="Featured species">
+        <span class="tag-index">№ 01</span>
+        <span><strong>Blue-footed booby</strong><i>Sula nebouxii</i></span>
+      </div>
+      <p class="scroll-note">Scroll to migrate <span>↓</span></p>
+    </section>
+
+    <section class="manifesto" id="field-notes">
+      <p class="section-label">[ FIELD NOTE 001 ]</p>
+      <div class="manifesto-grid">
+        <h2 class="scroll-reveal">Yes, they're<br>really called <em>boobies.</em></h2>
+        <div class="manifesto-copy scroll-reveal">
+          <p>The name may come from the Spanish <i>bobo</i>—“silly”—because these curious seabirds were famously unafraid of sailors.</p>
+          <p>But there’s nothing silly about a bird that turns a 30-metre plunge into dinner.</p>
+        </div>
+      </div>
+      <div class="fact-line scroll-reveal" aria-label="Booby facts">
+        <div><span class="fact-number">06</span><span>species<br>worldwide</span></div>
+        <div><span class="fact-number">96</span><span>km/h dive<br>entry speed*</span></div>
+        <div><span class="fact-number">01</span><span>very good<br>domain name</span></div>
+      </div>
+      <p class="footnote">*Approximate top speed recorded during plunge-diving.</p>
+    </section>
+
+    <section class="map-section" id="map">
+      <div class="map-heading scroll-reveal">
+        <p class="section-label">[ THE BOOBY MAP ]</p>
+        <h2>Spotted one?<br><em>Put it on the map.</em></h2>
+        <p>Our community field map is preparing for take-off. Soon, bird people everywhere can pin sightings, share photos and help build a joyful record of the flock.</p>
+      </div>
+      <div class="map-shell scroll-reveal" role="img" aria-label="Stylised world map showing booby seabird habitats">
+        <svg class="world-map" viewBox="0 0 1200 590" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g class="latitudes"><path d="M27 172Q600 38 1173 172"/><path d="M8 295Q600 175 1192 295"/><path d="M27 418Q600 552 1173 418"/></g>
+          <g class="land">
+            <path d="M100 170l47-47 76-28 83 16 59 60-22 38-48 8-26 53-42 13-31-46-66-20z"/>
+            <path d="M292 299l46 19 34 66-16 88-41 80-30-75 10-63-33-58z"/>
+            <path d="M496 156l40-29 53 10 36-20 48 23-18 31-75 8-25 45-46-23z"/>
+            <path d="M561 234l81-31 65 22 22 60-29 90-51 87-48-30-7-81-49-47z"/>
+            <path d="M656 137l90-30 162 28 83 54-31 43-78-2-62 39-53-13-31-47-70-22z"/>
+            <path d="M864 295l38-32 50 14 26 48-22 28-50-6-19-32z"/>
+            <path d="M940 415l52-28 75 20 23 55-42 49-77-13-33-39z"/>
+            <path d="M1087 331l26-12 17 18-24 21z"/>
+          </g>
+          <g class="routes"><path d="M319 350C420 246 514 231 619 284"/><path d="M619 284C760 361 872 370 1004 433"/><path d="M319 350C250 246 202 247 160 310"/></g>
+        </svg>
+        <button class="pin pin-galapagos active" data-place="Galápagos" data-species="Blue-footed booby" aria-label="Galápagos: Blue-footed booby sighting"><span></span></button>
+        <button class="pin pin-caribbean" data-place="Caribbean" data-species="Red-footed booby" aria-label="Caribbean: Red-footed booby sighting"><span></span></button>
+        <button class="pin pin-africa" data-place="Cape Verde" data-species="Brown booby" aria-label="Cape Verde: Brown booby sighting"><span></span></button>
+        <button class="pin pin-pacific" data-place="Central Pacific" data-species="Masked booby" aria-label="Central Pacific: Masked booby sighting"><span></span></button>
+        <button class="pin pin-australia" data-place="Coral Sea" data-species="Brown booby" aria-label="Coral Sea: Brown booby sighting"><span></span></button>
+        <div class="map-card" aria-live="polite"><span>SIGHTING 01</span><strong>Galápagos</strong><i>Blue-footed booby</i></div>
+        <div class="map-status"><span class="pulse"></span> Community map in development</div>
+      </div>
+    </section>
+
+    <section class="join" id="join">
+      <div class="join-orbit" aria-hidden="true"><span>BOOBS • PICTURES • BIRDS • FOREVER • </span></div>
+      <div class="join-copy scroll-reveal">
+        <p class="section-label">[ COMING SOON ]</p>
+        <h2>Wings up.<br><em>We're hatching.</em></h2>
+        <p>Follow the project and be first to know when community sightings go live.</p>
+        <a class="primary-action light" href="https://github.com/sanay-ourora/boobs-pictures" target="_blank" rel="noreferrer">Watch the build <span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#top">boobs<span>.</span>pictures</a><p>Made for birds, bird nerds, and people who clicked for the name.</p><span>© 2026</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>
