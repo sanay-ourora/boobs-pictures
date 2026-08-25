@@ -182,7 +182,8 @@ if (soundControl && soundRange && soundMute && finePointer.matches) {
 if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
   const context = cursorCanvas.getContext('2d');
   const birdCount = 69;
-  const pointer = { x: innerWidth / 2, y: innerHeight / 2, speed: 0 };
+  const pointer = { x: innerWidth / 2, y: innerHeight / 2, vx: 0, vy: 0, speed: 0 };
+  const flockAnchor = { x: pointer.x, y: pointer.y, vx: 0, vy: 0 };
   let width = innerWidth;
   let height = innerHeight;
   let pixelRatio = 1;
@@ -193,6 +194,7 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
   let pageIsPresent = true;
   let presenceFadeStarted = 0;
   let presenceFadeStartAlpha = 0;
+  let lastPointerSample = 0;
 
   const birds = Array.from({ length: birdCount }, (_, index) => ({
     x: pointer.x,
@@ -203,6 +205,9 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
     radius: 22 + Math.sqrt(index / birdCount) * 100 + Math.random() * 18,
     size: 2.2 + Math.random() * 1.4,
     orbitSpeed: 0.00042 + Math.random() * 0.00036,
+    agility: 0.0042 + Math.random() * 0.0024,
+    drag: 0.89 + Math.random() * 0.025,
+    trail: 0.45 + index / birdCount * 0.8 + Math.random() * 0.22,
   }));
 
   const resizeCursorCanvas = () => {
@@ -234,19 +239,33 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
   addEventListener('pointermove', (event) => {
     if (event.pointerType === 'touch') return;
 
-    const movement = Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y);
-    pointer.speed = pointer.speed * 0.72 + movement * 0.28;
+    const now = performance.now();
+    const elapsed = lastPointerSample ? Math.min(Math.max(now - lastPointerSample, 8), 50) : 16.67;
+    const movementX = event.clientX - pointer.x;
+    const movementY = event.clientY - pointer.y;
+    const velocityScale = 16.67 / elapsed;
+    const rawVelocityX = lastPointerSample ? movementX * velocityScale : 0;
+    const rawVelocityY = lastPointerSample ? movementY * velocityScale : 0;
+    pointer.vx = pointer.vx * 0.58 + rawVelocityX * 0.42;
+    pointer.vy = pointer.vy * 0.58 + rawVelocityY * 0.42;
+    pointer.speed = Math.hypot(pointer.vx, pointer.vy);
     pointer.x = event.clientX;
     pointer.y = event.clientY;
+    lastPointerSample = now;
     interactiveTarget = event.target instanceof Element && Boolean(event.target.closest('a, button, input'));
 
-    if (!lastPointerMove) scatterFlock();
+    if (!lastPointerMove) {
+      flockAnchor.x = pointer.x;
+      flockAnchor.y = pointer.y;
+      scatterFlock();
+    }
     lastPointerMove = performance.now();
   }, { passive: true });
 
   const drawBird = (bird, index, now) => {
     const direction = Math.atan2(bird.vy, bird.vx);
-    const wingLift = 0.9 + Math.sin(now * 0.012 + bird.phase) * 0.38;
+    const flightSpeed = Math.min(Math.hypot(bird.vx, bird.vy) / 8, 1);
+    const wingLift = 0.9 + Math.sin(now * (0.009 + flightSpeed * 0.009) + bird.phase) * (0.3 + flightSpeed * 0.18);
     const opacity = flockAlpha * (0.34 + (index % 9) * 0.055);
     const size = bird.size;
 
@@ -285,6 +304,7 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
   const animateFlock = (now) => {
     const frameScale = Math.min((now - previousFrame) / 16.67, 2);
     const pointerIsMoving = now - lastPointerMove < 180;
+    const speedFactor = pointerIsMoving ? Math.min(pointer.speed / 24, 1) : 0;
     const targetAlpha = lastPointerMove && pageIsPresent ? (pointerIsMoving ? 1 : 0.76) : 0;
     if (!pageIsPresent && presenceFadeStarted) {
       const fadeProgress = Math.min((now - presenceFadeStarted) / presenceFadeDuration, 1);
@@ -292,7 +312,23 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
     } else {
       flockAlpha += (targetAlpha - flockAlpha) * 0.075 * frameScale;
     }
-    pointer.speed *= Math.pow(0.92, frameScale);
+    pointer.vx *= Math.pow(pointerIsMoving ? 0.92 : 0.82, frameScale);
+    pointer.vy *= Math.pow(pointerIsMoving ? 0.92 : 0.82, frameScale);
+    pointer.speed = Math.hypot(pointer.vx, pointer.vy);
+
+    const anchorPull = (pointerIsMoving ? 0.018 : 0.011) * frameScale;
+    flockAnchor.vx += (pointer.x - flockAnchor.x) * anchorPull;
+    flockAnchor.vy += (pointer.y - flockAnchor.y) * anchorPull;
+    flockAnchor.vx *= Math.pow(pointerIsMoving ? 0.84 : 0.9, frameScale);
+    flockAnchor.vy *= Math.pow(pointerIsMoving ? 0.84 : 0.9, frameScale);
+    const anchorSpeed = Math.hypot(flockAnchor.vx, flockAnchor.vy);
+    const anchorLimit = 5.5 + speedFactor * 11;
+    if (anchorSpeed > anchorLimit) {
+      flockAnchor.vx *= anchorLimit / anchorSpeed;
+      flockAnchor.vy *= anchorLimit / anchorSpeed;
+    }
+    flockAnchor.x += flockAnchor.vx * frameScale;
+    flockAnchor.y += flockAnchor.vy * frameScale;
     previousFrame = now;
 
     context.clearRect(0, 0, width, height);
@@ -300,20 +336,29 @@ if (cursorCanvas && finePointer.matches && !reducedMotion.matches) {
     if (flockAlpha > 0.008) {
       birds.forEach((bird, index) => {
         const spread = interactiveTarget ? 1.36 : 1;
-        const holdingPattern = pointerIsMoving ? 0.72 : 1;
-        const orbit = now * bird.orbitSpeed * (pointerIsMoving ? 0.7 : 1.18) + bird.phase;
+        const holdingPattern = 1 - speedFactor * 0.42;
+        const orbit = now * bird.orbitSpeed * (pointerIsMoving ? 0.72 : 1.18) + bird.phase;
         const wobble = 1 + Math.sin(now * 0.0011 + bird.phase * 2.3) * 0.09;
-        const targetX = pointer.x + Math.cos(orbit) * bird.radius * spread * holdingPattern * wobble;
-        const targetY = pointer.y + Math.sin(orbit * 1.13) * bird.radius * 0.72 * spread * holdingPattern;
-        const pull = (0.0052 + (index % 7) * 0.00034) * frameScale;
+        const orbitX = Math.cos(orbit) * bird.radius * spread * holdingPattern * wobble;
+        const orbitY = Math.sin(orbit * 1.13) * bird.radius * 0.72 * spread * holdingPattern;
+        const headingLength = Math.max(pointer.speed, 0.001);
+        const headingX = pointerIsMoving ? pointer.vx / headingLength : 0;
+        const headingY = pointerIsMoving ? pointer.vy / headingLength : 0;
+        const sideX = -headingY;
+        const sideY = headingX;
+        const trailDistance = speedFactor * bird.radius * bird.trail * 0.72;
+        const lateralSway = Math.sin(now * 0.002 + bird.phase * 1.7) * bird.radius * 0.18 * speedFactor;
+        const targetX = flockAnchor.x + orbitX - headingX * trailDistance + sideX * lateralSway;
+        const targetY = flockAnchor.y + orbitY - headingY * trailDistance + sideY * lateralSway;
+        const pull = bird.agility * (1 + speedFactor * 0.65) * frameScale;
 
         bird.vx += (targetX - bird.x) * pull;
         bird.vy += (targetY - bird.y) * pull;
-        bird.vx *= Math.pow(0.91, frameScale);
-        bird.vy *= Math.pow(0.91, frameScale);
+        bird.vx *= Math.pow(bird.drag, frameScale);
+        bird.vy *= Math.pow(bird.drag, frameScale);
 
         const speed = Math.hypot(bird.vx, bird.vy);
-        const maxSpeed = interactiveTarget ? 6.2 : 5.2;
+        const maxSpeed = (interactiveTarget ? 6.4 : 5.4) + speedFactor * 4.8;
         if (speed > maxSpeed) {
           bird.vx *= maxSpeed / speed;
           bird.vy *= maxSpeed / speed;
