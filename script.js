@@ -44,12 +44,14 @@ if (factLine && factNumbers.length && !reducedMotion.matches) {
     });
 
     const runSequence = async () => {
-      const durations = [520, 900, 450];
+      const durations = [860, 960, 500];
+
+      await new Promise((resolve) => setTimeout(resolve, 640));
 
       for (let index = 0; index < factNumbers.length; index += 1) {
         await animateNumber(factNumbers[index], durations[index]);
         if (index < factNumbers.length - 1) {
-          await new Promise((resolve) => setTimeout(resolve, 110));
+          await new Promise((resolve) => setTimeout(resolve, 140));
         }
       }
     };
