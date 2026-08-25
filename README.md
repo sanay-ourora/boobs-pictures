@@ -18,12 +18,6 @@ Serve the folder with any static server, for example:
 npx serve .
 ```
 
-## Deployment
-
-The protected `main` branch is connected to Hostinger. After a pull request is merged, Hostinger automatically deploys that commit to the production website. Repository access, merge permissions, and the domain remain controlled by the maintainer.
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for the release flow.
-
 ## License
 
 Source code is available under the [MIT License](LICENSE). The logo, hero artwork, future user photographs, and sighting data are excluded; see [ASSET-LICENSE.md](ASSET-LICENSE.md).
