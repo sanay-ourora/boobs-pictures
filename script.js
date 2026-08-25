@@ -24,10 +24,31 @@ document.querySelectorAll('.pin').forEach((pin, index) => {
 
 const hero = document.querySelector('.hero');
 const heroMedia = document.querySelector('.hero-media');
+const heroCopy = document.querySelector('.hero-copy');
+let pointerX = 0;
+let pointerY = 0;
+let scrollShift = 0;
+
+const renderHeroDepth = () => {
+  heroMedia.style.transform = `scale(1.045) translate3d(${pointerX}px, ${pointerY + scrollShift}px, 0)`;
+};
+
 hero.addEventListener('pointermove', (event) => {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const x = (event.clientX / innerWidth - 0.5) * 10;
-  const y = (event.clientY / innerHeight - 0.5) * 7;
-  heroMedia.style.transform = `scale(1.045) translate(${x}px, ${y}px)`;
+  pointerX = (event.clientX / innerWidth - 0.5) * 10;
+  pointerY = (event.clientY / innerHeight - 0.5) * 7;
+  renderHeroDepth();
 });
 
+let scrollFrame;
+addEventListener('scroll', () => {
+  if (scrollFrame || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  scrollFrame = requestAnimationFrame(() => {
+    const progress = Math.min(scrollY / Math.max(innerHeight, 1), 1);
+    scrollShift = progress * 34;
+    heroCopy.style.transform = `translate3d(0, ${progress * 46}px, 0)`;
+    heroCopy.style.opacity = String(1 - progress * 0.72);
+    renderHeroDepth();
+    scrollFrame = null;
+  });
+}, { passive: true });
