@@ -21,28 +21,40 @@ if (factLine && factNumbers.length && !reducedMotion.matches) {
       number.textContent = '00';
     });
 
-    const startedAt = performance.now();
-    const duration = 1050;
-    const stagger = 110;
+    const animateNumber = (number, duration) => new Promise((resolve) => {
+      const target = Number(number.dataset.value);
+      const startedAt = performance.now();
+      number.style.setProperty('--count-duration', `${duration}ms`);
 
-    const count = (now) => {
-      factNumbers.forEach((number, index) => {
-        const elapsed = now - startedAt - index * stagger;
-        if (elapsed < 0) return;
-
+      const count = (now) => {
         number.classList.add('is-counting');
-        const progress = Math.min(elapsed / duration, 1);
+        const progress = Math.min((now - startedAt) / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
-        const value = Math.round(Number(number.dataset.value) * eased);
+        const value = Math.round(target * eased);
         number.textContent = String(value).padStart(2, '0');
-      });
 
-      if (now < startedAt + duration + stagger * (factNumbers.length - 1)) {
-        requestAnimationFrame(count);
+        if (progress < 1) {
+          requestAnimationFrame(count);
+        } else {
+          resolve();
+        }
+      };
+
+      requestAnimationFrame(count);
+    });
+
+    const runSequence = async () => {
+      const durations = [520, 900, 450];
+
+      for (let index = 0; index < factNumbers.length; index += 1) {
+        await animateNumber(factNumbers[index], durations[index]);
+        if (index < factNumbers.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 110));
+        }
       }
     };
 
-    requestAnimationFrame(count);
+    runSequence();
     factObserver.unobserve(factLine);
   }, { threshold: 0.4 });
 
